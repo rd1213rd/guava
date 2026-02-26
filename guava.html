@@ -60,26 +60,37 @@
 
         <fieldset>
             <legend>包裹與配送設定</legend>
-                        <div class="form-group">
-                <label>希望配達日</label>
+            <div class="form-group">
+                <label>希望配達日<span class="required">*</span></label>
                 <div class="input-wrapper">
-                    <select name="tempMode">
+                    <select name="deliveryTime">
                         <option value="平日">平日</option>
                         <option value="不限">不限</option>
-                       
                     </select>
                 </div>
+           </div>
+           <div class="form-group">
+                <label>數量選擇<span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <select name="weight">
+                        <option value="10斤">10斤</option>
+                        <option value="20斤">20斤</option>
+                        <option value="2箱10斤">2箱10斤</option>
+                    </select>
             </div>
-                        <div class="form-group">
-                <label>希望時段</label>
+            <div class="form-group">
+                <label>數量<span class="required">*</span></label>
+                <div class="input-wrapper"><input type="text" name="number" required></div>
+            </div>
+                <div class="form-group">
+                <label>希望時段<span class="required">*</span></label>
                 <div class="input-wrapper">
                     <select name="deliveryTime">
                         <option value="不指定">不指定</option>
                         <option value="13:00前">13:00 前</option>
                         <option value="14:00-18:00">14:00 - 18:00</option>
                     </select>
-                </div>
-            </div>
+            </div>          
             <div class="form-group">
                 <label>特殊備註</label>
                 <div class="input-wrapper"><textarea name="notes"></textarea></div>
@@ -92,7 +103,7 @@
 
 <script>
     // 請將下方的 URL 換成您在 Google Apps Script 部署後取得的 Web App URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxxf_ue78fqxGCqKHIIFJeORSoQarpIG5SgIzBL2Tcqk3ow7e0n11Iu_RoOceF6S_J5/exec'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzEIW3bTjSTXW4UtIAXMSkgxkVVX_VgKPZU14vsRi_-ss557ktnVjU3ZcytMzHybJ6L/exec'; 
     const form = document.getElementById('deliveryForm');
     const submitBtn = document.getElementById('submitBtn');
 
