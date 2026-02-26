@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上宅配填寫單 (串接Google Sheets)</title>
+    <style>
+        /* CSS 樣式與之前相同 */
+        body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .form-container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; }
+        fieldset { border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-bottom: 20px; background-color: #fafafa; }
+        legend { font-weight: bold; color: #3498db; background: #fff; padding: 0 10px; border: 1px solid #ddd; border-radius: 3px; }
+        .form-group { display: flex; flex-wrap: wrap; margin-bottom: 15px; }
+        .form-group label { flex: 1 0 120px; font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; }
+        .form-group .input-wrapper { flex: 3 0 200px; }
+        input[type="text"], input[type="tel"], input[type="date"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        textarea { resize: vertical; height: 80px; }
+        .required { color: #e74c3c; margin-left: 3px; }
+        .submit-btn { display: block; width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        .submit-btn:hover { background-color: #2980b9; }
+        .submit-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        @media (max-width: 600px) { .form-group { flex-direction: column; } .form-group label { margin-bottom: 8px; } }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>📦 線上託運填寫單</h2>
+    
+    <form id="deliveryForm">
+        
+        <fieldset>
+            <legend>寄件人資訊</legend>
+            <div class="form-group">
+                <label>姓名/公司<span class="required">*</span></label>
+                <div class="input-wrapper"><input type="text" name="senderName" required></div>
+            </div>
+            <div class="form-group">
+                <label>聯絡電話<span class="required">*</span></label>
+                <div class="input-wrapper"><input type="tel" name="senderPhone" required></div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>收件人資訊</legend>
+            <div class="form-group">
+                <label>姓名/公司<span class="required">*</span></label>
+                <div class="input-wrapper"><input type="text" name="receiverName" required></div>
+            </div>
+            <div class="form-group">
+                <label>聯絡電話<span class="required">*</span></label>
+                <div class="input-wrapper"><input type="tel" name="receiverPhone" required></div>
+            </div>
+            <div class="form-group">
+                <label>完整地址<span class="required">*</span></label>
+                <div class="input-wrapper"><input type="text" name="receiverAddress" required></div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>包裹與配送設定</legend>
+                        <div class="form-group">
+                <label>希望配達日</label>
+                <div class="input-wrapper">
+                    <select name="tempMode">
+                        <option value="平日">平日</option>
+                        <option value="不限">不限</option>
+                       
+                    </select>
+                </div>
+            </div>
+                        <div class="form-group">
+                <label>希望時段</label>
+                <div class="input-wrapper">
+                    <select name="deliveryTime">
+                        <option value="不指定">不指定</option>
+                        <option value="13:00前">13:00 前</option>
+                        <option value="14:00-18:00">14:00 - 18:00</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>特殊備註</label>
+                <div class="input-wrapper"><textarea name="notes"></textarea></div>
+            </div>
+        </fieldset>
+
+        <button type="submit" class="submit-btn" id="submitBtn">送出託運單</button>
+    </form>
+</div>
+
+<script>
+    // 請將下方的 URL 換成您在 Google Apps Script 部署後取得的 Web App URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxxf_ue78fqxGCqKHIIFJeORSoQarpIG5SgIzBL2Tcqk3ow7e0n11Iu_RoOceF6S_J5/exec'; 
+    const form = document.getElementById('deliveryForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault(); // 防止頁面重新載入
+        
+        // 改變按鈕狀態，提示使用者正在處理中
+        submitBtn.disabled = true;
+        submitBtn.textContent = '資料傳送中...';
+
+        // 使用 FormData 收集表單資料
+        let formData = new FormData(form);
+
+        // 將資料 POST 到 Google Apps Script
+        fetch(scriptURL, { method: 'POST', body: formData})
+            .then(response => {
+                alert('✅ 託運單已成功送出！');
+                form.reset(); // 清空表單
+                submitBtn.disabled = false;
+                submitBtn.textContent = '送出託運單';
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                alert('❌ 傳送失敗，請稍後再試或聯繫客服。');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '送出託運單';
+            });
+    });
+</script>
+
+</body>
+</html>
